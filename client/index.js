@@ -135,8 +135,15 @@ function deleteRowById(id) {
 
 function handleEditRow(id) {
     const updateSection = document.querySelector('#update-row');
-    updateSection.hidden = !updateSection.hidden;
+    const updateRowBtn = document.querySelector('#update-row-btn');
     const updateNameInput = document.querySelector('#update-name-input')
+
+
+    if(updateSection.hidden || updateRowBtn.dataset.id === id) {
+        updateSection.hidden = !updateSection.hidden;
+    }
+
+    
+    updateRowBtn.dataset.id = id;
     updateNameInput.value = "";
-    document.querySelector('#update-row-btn').dataset.id = id;
 }

@@ -3,6 +3,10 @@ const dotenv = require('dotenv');
 let instance = null;
 dotenv.config();
 
+const testTable = "debug_names";
+const indexTable = "index";
+const table = testTable;
+
 const connection = mysql.createConnection({
     host: process.env.HOST,
     user: process.env.USER,
@@ -26,7 +30,7 @@ class DbService {
     async getAllData() {
         try {
             const response = await new Promise((resolve, reject) => {
-                const query = "SELECT * FROM debug_names;";
+                const query = `SELECT * FROM ${table};`;
 
                 connection.query(query, (err, results) => {
                     if (err) reject(new Error(err.message));
@@ -44,7 +48,7 @@ class DbService {
         try {
             const dateAdded = new Date();
             const insertId = await new Promise((resolve, reject) => {
-                const query = "INSERT INTO debug_names (name, date_added) VALUES (?,?);";
+                const query = `INSERT INTO ${table} (name, date_added) VALUES (?,?);`;
 
                 connection.query(query, [name, dateAdded], (err, result) => {
                     if (err) reject(new Error(err.message));
@@ -65,7 +69,7 @@ class DbService {
         try {
             id = parseInt(id, 10);
             const response = await new Promise((resolve, reject) => {
-                const query = "DELETE FROM debug_names WHERE ID = ?";
+                const query = `DELETE FROM ${table} WHERE ID = ?`;
     
                 connection.query(query, [id], (err, result) => {
                     if (err) reject(new Error(err.message));
@@ -84,7 +88,7 @@ class DbService {
         try {
             id = parseInt(id, 10);
             const response = await new Promise((resolve, reject) => {
-                const query = "UPDATE debug_names SET name = ? WHERE id = ?";
+                const query = `UPDATE ${table} SET name = ? WHERE id = ?`;
     
                 connection.query(query, [name, id], (err, result) => {
                     if (err) reject(new Error(err.message));
@@ -102,7 +106,7 @@ class DbService {
     async searchByName(name) {
         try {
             const response = await new Promise((resolve, reject) => {
-                const query = "SELECT * FROM debug_names WHERE name = ?;";
+                const query = `SELECT * FROM ${table} WHERE name = ?;`;
 
                 connection.query(query, [name], (err, results) => {
                     if (err) reject(new Error(err.message));
