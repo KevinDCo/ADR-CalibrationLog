@@ -8,9 +8,74 @@
 </head>
 <body>
     <main>
+        <!-- Trigger/Open The Modal -->
+        <button id="add-item-modal-btn">Add Item</button>
+
+        <!-- The Modal -->
+        <div id="itemModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <form class="item-form" id="item-form">
+                    <div class="item-field">
+                        <label for="group">Group</label>
+                        <input type="text" id="group" name="group">
+                    </div>
+                    <div class="item-field">
+                        <label for="item_description">Item Description</label>
+                        <input type="text" id="item_description" name="item_description">
+                    </div>
+                    <div class="item-field">
+                        <label for="serial_num">Serial #</label>
+                        <input type="text" id="serial_num" name="serial_num">
+                    </div>
+                    <div class="item-field">
+                        <label for="specification">Specification</label>
+                        <input type="text" id="specification" name="specification">
+                    </div>
+                    <div class="item-field">
+                        <label for="accepted_tolerance">Accepted Tolerance</label>
+                        <input type="text" id="accepted_tolerance" name="accepted_tolerance">
+                    </div>
+                    <div class="item-field">
+                        <label for="cal_interval">Cal Interval</label>
+                        <select class="item-field-dropdown" name="cal_interval" id="cal_interval">
+                            <option value="3">3 months</option>
+                            <option value="6">6 months</option>
+                            <option value="12">12 months</option>
+                            <option value="24">24 months</option>
+                        </select>
+                    </div>
+                    <div class="item-field">
+                        <label for="cal_vendor">Cal Vendor</label>
+                        <input type="text" id="cal_vendor" name="cal_vendor">
+                    </div>
+                    <div class="item-field">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" name="location">
+                    </div>
+                    <div class="item-field">
+                        <label for="cal_date">Cal Date</label>
+                        <input type="date" id="cal_date" name="cal_date">
+                    </div>
+                    <div class="item-field">
+                        <label for="cal_due">Cal Due</label>
+                        <input type="date" id="cal_due" name="cal_due">
+                    </div>
+                    <div class="item-field">
+                        <label for="out_for_cal">Out For Cal</label>
+                        <input type="date" id="out_for_cal" name="out_for_cal">
+                    </div>
+                    <div class="line-break"></div>
+                    <input type="reset">
+                    <input type="submit">
+                </form>
+            </div>
+        </div>
+
         <label>Name:</label>
         <input type="text" id="name-input">
-        <button id="add-name-btn">Add Name</button>
+        <button id="add-name-btn">Add Item</button>
 
         <br><br><br>
         <div>
@@ -21,12 +86,24 @@
         <table id="table">
             <thead>
                 <th>ID</th>
-                <th>Name</th>
                 <th>Date Added</th>
+                <th>Group</th>
+                <th>Item Description</th>
+                <th>Serial #</th>
+                <th>Specification</th>
+                <th>Accepted Tolerance</th>
+                <th>Cal Interval</th>
+                <th>Cal Vendor</th>
+                <th>Location</th>
+                <th>Cal Date</th>
+                <th>Cal Due</th>
+                <th>Out For Cal</th>
+                <th>Disposition</th>
+                <!--th>Active</th-->
                 <th>Delete</th>
                 <th>Edit</th>
             </thead>
-            <tbody></tbody>
+            <tbody id="cal-index-data"></tbody>
         </table>
 
         <section hidden id="update-row">

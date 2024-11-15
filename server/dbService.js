@@ -4,8 +4,8 @@ let instance = null;
 dotenv.config();
 
 const testTable = "debug_names";
-const indexTable = "index";
-const table = testTable;
+const indexTable = 'tool_index';
+const table = indexTable;
 
 const connection = mysql.createConnection({
     host: process.env.HOST,
@@ -19,7 +19,7 @@ connection.connect((err) => {
     if (err) {
         console.log(err.message);
     }
-    //console.log('db ' + connection.state);
+    // console.log('db ' + connection.state);
 })
 
 class DbService {
@@ -44,21 +44,37 @@ class DbService {
         }
     }
 
-    async insertNewName(name) {
+    async insertNewItem({ group, item_description,  
+        serial_num, specification, 
+        accepted_tolerance, cal_interval,
+        cal_vendor, location, 
+        cal_date, cal_due,
+        out_for_cal, disposition}) {
         try {
             const dateAdded = new Date();
             const insertId = await new Promise((resolve, reject) => {
-                const query = `INSERT INTO ${table} (name, date_added) VALUES (?,?);`;
+                const query = `INSERT INTO ${table} (date_added, tool_group, item_description, serial_num, specification, accepted_tolerance, cal_interval, cal_vendor, location, cal_date, cal_due, out_for_cal, disposition) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);`;
 
-                connection.query(query, [name, dateAdded], (err, result) => {
+                                    connection.query(query, [dateAdded, group, item_description, serial_num, specification, accepted_tolerance, cal_interval, cal_vendor, location, cal_date, cal_due, out_for_cal, disposition], (err, result) => {
                     if (err) reject(new Error(err.message));
                     resolve(result.insertId);
                 })
             });
             return {
                 id : insertId,
-                name : name,
-                dateAdded : dateAdded
+                dateAdded : dateAdded,
+                group : group,
+                item_description : item_description,
+                serial_num : serial_num,
+                specification : specification,
+                accepted_tolerance : accepted_tolerance,
+                cal_interval : cal_interval,
+                cal_vendor : cal_vendor,
+                location : location,
+                cal_date : cal_date,
+                cal_due : cal_due,
+                out_for_cal : out_for_cal,
+                disposition : disposition
             };
         } catch (error) {
             console.log(error);

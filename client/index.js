@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(data => loadHTMLTable(data['data']));
 });
 
-document.querySelector('table tbody').addEventListener('click', function(event) {
+document.querySelector('#cal-index-data').addEventListener('click', function(event) {
     if (event.target.className === 'delete-row-btn') {
         deleteRowById(event.target.dataset.id);
     }
@@ -67,12 +67,12 @@ addNameBtn.onclick = function () {
 }
 
 function fetchData() {
-    return fetch(apiURL+ 'getAll')
+    return fetch(apiURL + 'getAll')
     .then(response => response.json())
 }
 
 function loadHTMLTable(data) {
-    const table = document.querySelector('table tbody');
+    const table = document.getElementById('cal-index-data');
     
     if (data.length === 0) {
         table.innerHTML = "<tr><td class='no-data' colspan='5'>No Data</td></tr>"
@@ -81,11 +81,24 @@ function loadHTMLTable(data) {
 
     let tableHtml = "";
 
-    data.forEach(function ({id, name, date_added}) {
+    data.forEach(function ({id, date_added, tool_group, item_description, serial_num, specification, accepted_tolerance,
+        cal_interval, cal_vendor, location, cal_date, cal_due, out_for_cal, disposition, active}) {
         tableHtml += "<tr>";
         tableHtml += `<td>${id}</td>`;
-        tableHtml += `<td>${name}</td>`;
         tableHtml += `<td>${new Date(date_added).toLocaleString()}</td>`;
+        tableHtml += `<td>${tool_group}</td>`;
+        tableHtml += `<td>${item_description}</td>`;
+        tableHtml += `<td>${serial_num}</td>`;
+        tableHtml += `<td>${specification}</td>`;
+        tableHtml += `<td>${accepted_tolerance}</td>`;
+        tableHtml += `<td>${cal_interval}</td>`;
+        tableHtml += `<td>${cal_vendor}</td>`;
+        tableHtml += `<td>${location}</td>`;
+        tableHtml += `<td>${new Date(cal_date).toLocaleDateString()}</td>`;
+        tableHtml += `<td>${new Date(cal_due).toLocaleDateString()}</td>`;
+        tableHtml += `<td>${new Date(out_for_cal).toLocaleDateString()}</td>`;
+        tableHtml += `<td>${disposition}</td>`;
+        //tableHtml += `<td>${active}</td>`;
         tableHtml += `<td><button class="delete-row-btn" data-id=${id}>Delete</td>`;
         tableHtml += `<td><button class="edit-row-btn" data-id=${id}>Edit</td>`;
         tableHtml += "</tr>"
@@ -104,6 +117,9 @@ function insertRowIntoTable(data) {
         if (data.hasOwnProperty(key)) {
             if (key === 'dateAdded') {
                 data[key] = new Date(data[key]).toLocaleString();
+            }
+            if (key === 'cal_date' || key === 'cal_due' || key === 'out_for_cal') {
+                data[key] = new Date(data[key]).toLocaleDateString();
             }
             tableHtml += `<td>${data[key]}</td>`
         }
@@ -143,7 +159,61 @@ function handleEditRow(id) {
         updateSection.hidden = !updateSection.hidden;
     }
 
-    
+
     updateRowBtn.dataset.id = id;
     updateNameInput.value = "";
+}
+
+// modal code
+var modal = document.getElementById("itemModal");
+var addItemModalBtn = document.getElementById("add-item-modal-btn");
+var closeSpan = document.getElementsByClassName("close")[0];
+const itemForm = document.getElementById("item-form");
+
+itemForm.onsubmit =  function (e) {
+    e.preventDefault();
+    let formData = new FormData(itemForm)
+    let json = Object.fromEntries(formData);
+
+    // convert dates to isostring
+    let dateEntries = ['cal_date', 'cal_due', 'out_for_cal'];
+    for (let dataKey of dateEntries) {
+        if(json[dataKey] !== "") 
+            json[dataKey] = new Date(json[dataKey]).toISOString()
+    }
+    
+    let jsonString = JSON.stringify(json);
+    console.log(jsonString);
+
+    // send data to api
+    fetch(apiURL + 'insert', {
+        headers: {
+            'Content-type': 'application/json'
+        },
+        method: 'POST',
+        body: jsonString
+    })
+    .then(response => response.json())
+    .then(data => insertRowIntoTable(data['data']));
+
+
+    // close modal and reset
+    modal.style.display = "none";
+    itemForm.reset();
+}
+
+addItemModalBtn.onclick = function() {
+  modal.style.display = "block";
+}
+
+closeSpan.onclick = function() {
+  modal.style.display = "none";
+  itemForm.reset();
+}
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+    itemForm.reset();
+  }
 }

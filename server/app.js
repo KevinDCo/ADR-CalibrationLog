@@ -12,10 +12,45 @@ app.use(express.urlencoded({ extended : false }));
 
 // create
 app.post('/insert', (request, response) => {
-    const { name } = request.body;
-    const db = dbService.getDbServiceInstance();
+    const item = request.body;
 
-    const result = db.insertNewName(name);
+    // calculate dates
+    function addMonths(date, months) {
+        var d = date.getDate();
+        date.setMonth(date.getMonth() + +months);
+        if (date.getDate() != d) {
+          date.setDate(0);
+        }
+        return date;
+    }
+
+    // if there is cal_date and cal_interval and no cal_due => calculate cal due
+    if (item['cal_date'] && item['cal_interval'] && !item['cal_due']){
+        console.log('need to set cal_due!');
+        item['cal_due'] = addMonths(new Date(item['cal_date']), item['cal_interval']).toISOString();
+    }
+
+    // set disposition
+    // if there's out for cal date => set to OUT FOR CAL
+    // if cal_due is soon (4 weeks) => set to CAL SOON, if cal_due is greater than 4 weeks ahead => set to CAL CURRENT
+    // otherwise => set to OUT OF CAL
+    calDueDate = new Date(item['cal_due']);
+    date = new Date();
+    weeksDiff = (calDueDate - date) / (1000 * 60 * 60 * 24 * 7);
+    console.log(`weeksDiff: ${weeksDiff}`);
+    if(item['out_for_cal'] !== "") {
+        item['disposition'] = "OUT FOR CAL";
+    } else if (calDueDate > date) {
+        item['disposition'] = "CAL SOON"
+        if(weeksDiff > 4)
+            item['disposition'] = "CAL CURRENT";
+    } else {
+        item['disposition'] = "OUT OF CAL";
+    }
+
+    const db = dbService.getDbServiceInstance();
+    
+    const result = db.insertNewItem(item);
 
     result
     .then(data => response.json({ data : data }))
