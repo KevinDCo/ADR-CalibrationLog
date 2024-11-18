@@ -16,6 +16,7 @@
             <!-- Modal content -->
             <div class="modal-content">
                 <span class="close">&times;</span>
+                <h1 id="modal-title">Add Item</h1>
                 <form class="item-form" id="item-form">
                     <div class="item-field">
                         <label for="group">Group</label>
@@ -68,7 +69,7 @@
                     </div>
                     <div class="line-break"></div>
                     <input type="reset">
-                    <input type="submit">
+                    <input id="submit" type="submit">
                 </form>
             </div>
         </div>
@@ -84,24 +85,23 @@
         </div>
 
         <table id="table">
-            <thead>
-                <th>ID</th>
-                <th>Date Added</th>
-                <th>Group</th>
-                <th>Item Description</th>
-                <th>Serial #</th>
-                <th>Specification</th>
-                <th>Accepted Tolerance</th>
-                <th>Cal Interval</th>
-                <th>Cal Vendor</th>
-                <th>Location</th>
-                <th>Cal Date</th>
-                <th>Cal Due</th>
-                <th>Out For Cal</th>
-                <th>Disposition</th>
-                <!--th>Active</th-->
-                <th>Delete</th>
-                <th>Edit</th>
+            <thead id="cal-index-headers">
+                <th name="id">ID</th>
+                <th name="date_added">Date Added</th>
+                <th name="group">Group</th>
+                <th name="item_description">Item Description</th>
+                <th name="serial_num">Serial #</th>
+                <th name="specification">Specification</th>
+                <th name="accepted_tolerance">Accepted Tolerance</th>
+                <th name="cal_interval">Cal Interval</th>
+                <th name="cal_vendor">Cal Vendor</th>
+                <th name="location">Location</th>
+                <th name="cal_date">Cal Date</th>
+                <th name="cal_due">Cal Due</th>
+                <th name="out_for_cal">Out For Cal</th>
+                <th name="disposition">Disposition</th>
+                <th name="deletee">Delete</th>
+                <th name="edit">Edit</th>
             </thead>
             <tbody id="cal-index-data"></tbody>
         </table>

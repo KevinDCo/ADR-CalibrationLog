@@ -98,7 +98,6 @@ function loadHTMLTable(data) {
         tableHtml += `<td>${new Date(cal_due).toLocaleDateString()}</td>`;
         tableHtml += `<td>${new Date(out_for_cal).toLocaleDateString()}</td>`;
         tableHtml += `<td>${disposition}</td>`;
-        //tableHtml += `<td>${active}</td>`;
         tableHtml += `<td><button class="delete-row-btn" data-id=${id}>Delete</td>`;
         tableHtml += `<td><button class="edit-row-btn" data-id=${id}>Edit</td>`;
         tableHtml += "</tr>"
@@ -149,28 +148,74 @@ function deleteRowById(id) {
     });
 }
 
-function handleEditRow(id) {
-    const updateSection = document.querySelector('#update-row');
-    const updateRowBtn = document.querySelector('#update-row-btn');
-    const updateNameInput = document.querySelector('#update-name-input')
-
-
-    if(updateSection.hidden || updateRowBtn.dataset.id === id) {
-        updateSection.hidden = !updateSection.hidden;
-    }
-
-
-    updateRowBtn.dataset.id = id;
-    updateNameInput.value = "";
-}
 
 // modal code
 var modal = document.getElementById("itemModal");
 var addItemModalBtn = document.getElementById("add-item-modal-btn");
 var closeSpan = document.getElementsByClassName("close")[0];
 const itemForm = document.getElementById("item-form");
+const modalTitle = document.getElementById("modal-title");
 
-itemForm.onsubmit =  function (e) {
+function handleEditRow(id) {
+    const submit = document.getElementById("submit");
+    submit.dataset.id = id;
+
+    itemForm.onsubmit = (e) => editItem(e);
+    modalTitle.innerHTML = "Edit Item";
+    modal.style.display = "block";
+
+
+    // find correct row in table.
+    const tableBody = document.getElementById("cal-index-data");
+    let headers = document.querySelectorAll("#cal-index-headers > tr > th")
+
+    let rowData = {};
+    for (var i = 0, row; row = tableBody.rows[i]; i++) {
+        if (row.cells[0].innerHTML === id) {
+            for (var j = 0, cell; cell = row.cells[j]; j++){
+                rowData[headers[j].getAttribute("name")] = cell.innerHTML;
+            }
+            break;
+        }
+     }
+     console.log(rowData);
+
+    // populate fields with pre-existing data
+    itemForm.querySelector("#group").value = rowData["group"];
+    itemForm.querySelector("#item_description").value = rowData["item_description"];
+    itemForm.querySelector("#serial_num").value = rowData["serial_num"];
+    itemForm.querySelector("#specification").value = rowData["specification"];
+    itemForm.querySelector("#accepted_tolerance").value = rowData["accepted_tolerance"];
+    itemForm.querySelector("#cal_interval").value = rowData["cal_interval"];
+    itemForm.querySelector("#cal_vendor").value = rowData["cal_vendor"];
+    itemForm.querySelector("#location").value = rowData["location"];
+    try {
+        itemForm.querySelector("#cal_date").value = new Date(rowData["cal_date"]).toISOString().split('T')[0];
+    } catch (e) {
+        itemForm.querySelector("#cal_date").value = new Date("");
+    }
+    try {
+        itemForm.querySelector("#cal_due").value = new Date(rowData["cal_due"]).toISOString().split('T')[0];
+    } catch (e) {
+        itemForm.querySelector("#cal_due").value = new Date("");
+    }
+    try {
+        itemForm.querySelector("#out_for_cal").value = new Date(rowData["out_for_cal"]).toISOString().split('T')[0];
+    } catch (e) {
+        itemForm.querySelector("#out_for_cal").value = new Date("");
+    }
+}
+function editItem(e) {
+    e.preventDefault();
+    let formData = new FormData(itemForm);
+    let json = Object.fromEntries(formData);
+
+    // send data to api
+    itemForm.reset();
+    return;
+}
+
+function addNewItem(e) {
     e.preventDefault();
     let formData = new FormData(itemForm)
     let json = Object.fromEntries(formData);
@@ -196,24 +241,25 @@ itemForm.onsubmit =  function (e) {
     .then(response => response.json())
     .then(data => insertRowIntoTable(data['data']));
 
-
     // close modal and reset
     modal.style.display = "none";
     itemForm.reset();
 }
 
 addItemModalBtn.onclick = function() {
-  modal.style.display = "block";
+    itemForm.onsubmit =  (e) => addNewItem(e);
+    modalTitle.innerHTML = "Add Item";
+    modal.style.display = "block";
 }
 
 closeSpan.onclick = function() {
-  modal.style.display = "none";
-  itemForm.reset();
+    modal.style.display = "none";
+    itemForm.reset();
 }
 
 window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-    itemForm.reset();
-  }
+    if (event.target == modal) {
+        modal.style.display = "none";
+        itemForm.reset();
+    }
 }
