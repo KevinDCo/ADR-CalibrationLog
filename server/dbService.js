@@ -49,7 +49,7 @@ class DbService {
         accepted_tolerance, cal_interval,
         cal_vendor, location, 
         cal_date, cal_due,
-        out_for_cal, disposition}) {
+        out_for_cal, disposition }) {
         try {
             const dateAdded = new Date();
             const insertId = await new Promise((resolve, reject) => {
@@ -100,13 +100,18 @@ class DbService {
         }
     }
 
-    async updateNameById(id, name) {
+    async updateItemById(id, { group, item_description,  
+        serial_num, specification, 
+        accepted_tolerance, cal_interval,
+        cal_vendor, location, 
+        cal_date, cal_due,
+        out_for_cal, disposition }) {
         try {
             id = parseInt(id, 10);
             const response = await new Promise((resolve, reject) => {
-                const query = `UPDATE ${table} SET name = ? WHERE id = ?`;
+                const query = `UPDATE ${table} SET tool_group = ?, item_description = ?, serial_num = ?, specification = ?, accepted_tolerance = ?, cal_interval = ?, cal_vendor = ?, location = ?, cal_date = ?, cal_due = ?, out_for_cal = ?, disposition = ? WHERE id = ?`;
     
-                connection.query(query, [name, id], (err, result) => {
+                connection.query(query, [group, item_description, serial_num, specification, accepted_tolerance, cal_interval, cal_vendor, location, cal_date, cal_due, out_for_cal, disposition, id], (err, result) => {
                     if (err) reject(new Error(err.message));
                     resolve(result.affectedRows);
                 })

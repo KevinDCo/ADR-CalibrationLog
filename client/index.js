@@ -178,7 +178,7 @@ function handleEditRow(id) {
             break;
         }
      }
-     console.log(rowData);
+    //console.log(rowData);
 
     // populate fields with pre-existing data
     itemForm.querySelector("#group").value = rowData["group"];
@@ -205,12 +205,43 @@ function handleEditRow(id) {
         itemForm.querySelector("#out_for_cal").value = new Date("");
     }
 }
+
 function editItem(e) {
     e.preventDefault();
     let formData = new FormData(itemForm);
     let json = Object.fromEntries(formData);
 
+    const submit = document.getElementById("submit");
+    json['id'] = submit.dataset.id
+
+    // convert dates to isostring
+    let dataEntries = ['cal_date', 'cal_due', 'out_for_cal'];
+    for (let dataKey of dataEntries) {
+        if(json[dataKey] !== "")
+            json[dataKey] = new Date(json[dataKey]).toISOString();
+    }
+
+    let jsonString = JSON.stringify(json);
+    console.log(jsonString);
+
+    
     // send data to api
+    fetch(apiURL + 'update', {
+        method: 'PATCH',
+        headers: {
+            'Content-type': 'application/json'
+        },
+        body: jsonString
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    })
+
+    // close modal and reset
+    modal.style.display = "none";
     itemForm.reset();
     return;
 }
@@ -224,7 +255,7 @@ function addNewItem(e) {
     let dateEntries = ['cal_date', 'cal_due', 'out_for_cal'];
     for (let dataKey of dateEntries) {
         if(json[dataKey] !== "") 
-            json[dataKey] = new Date(json[dataKey]).toISOString()
+            json[dataKey] = new Date(json[dataKey]).toISOString();
     }
     
     let jsonString = JSON.stringify(json);
